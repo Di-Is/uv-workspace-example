@@ -1,0 +1,11 @@
+[project]
+name = "app"
+version = "0.1.0"
+requires-python = "~=3.9"
+dependencies = [
+    "fastapi[standard]",
+    "lib",
+]
+
+[tool.uv.sources]
+lib = { workspace = true }

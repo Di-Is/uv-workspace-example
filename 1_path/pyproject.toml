@@ -1,0 +1,18 @@
+[project]
+name = "case1"
+version = "0.0.1"
+requires-python = "~=3.9"
+dependencies = []
+
+[dependency-groups]
+workspace = ["app", "lib", "lib-core"]
+lint = ["ruff"]
+dev = [
+    { include-group = "lint"},
+    { include-group = "workspace"},
+]
+
+[tool.uv.sources]
+app = { path = "./app", editable = true }
+lib = { path = "./libs/lib", editable = true }
+lib-core = { path = "./libs/lib-core", editable = true }

@@ -1,0 +1,21 @@
+[project]
+name = "monorepo"
+version = "0.0.1"
+dependencies = []
+requires-python = ">=3.9"
+
+[dependency-groups]
+workspace = ["app", "lib", "lib-core"]
+lint = ["ruff"]
+dev = [
+    { include-group = "lint"},
+    { include-group = "workspace"},
+]
+
+[tool.uv.sources]
+app = { workspace = true }
+lib = { workspace = true }
+lib-core = { workspace = true }
+
+[tool.uv.workspace]
+members = ["libs/*", "app"]
