@@ -1,0 +1,41 @@
+[tool.poe.tasks]
+# 静的解析
+lint = "uv run ruff check"
+fmt = "uv run ruff format"
+fmt-check = "uv run ruff format --check"
+typo = "uv run typos"
+mypy-precise-logger = "uv run mypy -m precise_logger"
+mypy-precise-logger-json = "uv run mypy -m precise_logger_json"
+mypy-all = ["mypy-precise-logger", "mypy-precise-logger"]
+check = ["lint", "fmt-check", "typo", "mypy-all"]
+
+# ビルド
+build-precise-logger = "uv build --package precise_logger"
+build-precise-logger-json = "uv build --package precise_logger_json"
+build-all = "uv build --all-packages"
+
+# テスト
+test-precise-logger = ["test ${python_version} --package precise_logger"]
+test-precise-logger-json = [
+    "test ${python_version} --package precise_logger_json",
+]
+test-all = ["test-precise-logger", "test-precise-logger-json"]
+[tool.poe.tasks.test]
+script = "scripts.test:execute_test"
+args = [{ name = "python_version", default = "all" }, { name = "package" }]
+
+
+[dependency-groups]
+lint = ["ruff"]
+mypy = ["mypy"]
+typo = ["typos"]
+test = ["pytest"]
+dev = [
+    { include-group = "mypy" },
+    { include-group = "test" },
+    { include-group = "typo" },
+    { include-group = "lint" },
+]
+
+[tool.uv.workspace]
+members = ["libs/*"]

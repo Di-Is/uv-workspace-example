@@ -1,0 +1,17 @@
+[project]
+name = "precise-logger-json"
+version = "0.1.0"
+readme = "README.md"
+authors = [{ name = "Di-Is", email = "rohoxbox@gmail.com" }]
+requires-python = "~=3.9"
+dependencies = ["python-json-logger~=3.0", "precise-logger>=0.1.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+precise-logger = { workspace = true }
+
+[dependency-groups]
+test = ["pytest"]
