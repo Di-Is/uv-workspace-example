@@ -1,6 +1,5 @@
 global:
     envs:
-        - ProjectName: myproject
 
 tasks:
     - name: generate env file for compose.yml
