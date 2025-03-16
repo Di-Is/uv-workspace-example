@@ -5,22 +5,25 @@
 #     "pyyaml",
 # ]
 # ///
-import sys
 import os
 import subprocess
+import sys
+
 import yaml
 
 TASK_KEY = "tasks"
 DEBUG_MODE = False
 
+
 def load_yaml_files(filepaths):
     """Load and merge multiple YAML files."""
     merged_data = {}
     for filepath in filepaths:
-        with open(filepath, "r") as file:
+        with open(filepath) as file:
             data = yaml.safe_load(file) or {}
             merged_data = deep_merge(merged_data, data)
     return merged_data
+
 
 def deep_merge(a, b):
     """Deep merge two dictionaries, appending lists instead of replacing them."""
@@ -47,7 +50,7 @@ def deep_merge(a, b):
 def execute_task(task_name, cmds, envs):
     """Execute a task as a subprocess with isolated environment."""
     print(f"Running step: {task_name}")
-    
+
     # 環境変数の準備
     task_env = os.environ.copy()
     task_env.update(envs)
@@ -57,6 +60,7 @@ def execute_task(task_name, cmds, envs):
     except subprocess.CalledProcessError as e:
         print(f"Step '{task_name}' failed (exit code: {e.returncode}). Aborting.")
         sys.exit(e.returncode)
+
 
 def main():
     global DEBUG_MODE
@@ -118,6 +122,7 @@ def main():
         execute_task(task_name, cmds, all_envs)
 
     print("All steps completed successfully.")
+
 
 if __name__ == "__main__":
     main()
