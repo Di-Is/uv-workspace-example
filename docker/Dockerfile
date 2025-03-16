@@ -3,7 +3,7 @@ ARG _UV_VERSION=0.6.6
 
 FROM ubuntu:24.04 AS ubuntu_base
 
-# UIDの重複を避けるため、ubuntu:24.04に含まれるubuntuユーザーを削除
+# For Ubuntu 24.04
 RUN userdel -f -r ubuntu
 
 ENV DEBIAN_FRONTEND=noninteractivew
@@ -13,6 +13,14 @@ RUN --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache/apt/archives \
     apt update && \
     apt upgrade -y
+
+RUN --mount=type=cache,target=/var/lib/apt/lists \
+    --mount=type=cache,target=/var/cache/apt/archives \
+    apt install -y --no-install-recommends \
+        locales \
+        locales-all
+
+RUN locale-gen en_US.UTF-8
 
 RUN --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache/apt/archives \
