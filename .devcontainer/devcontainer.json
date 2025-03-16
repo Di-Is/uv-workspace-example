@@ -1,9 +1,11 @@
 {
     "name": "python",
-    "dockerComposeFile": "compose.yml",
+    "dockerComposeFile": "../docker/compose.devel.yml",
     "service": "workspace",
-    "workspaceFolder": "/workspace",
-    "postCreateCommand": "/bin/sh .devcontainer/postCreateCommand.sh",
+    "workspaceFolder": "/home/ubuntu/workspace",
+    "updateRemoteUserUID": false,
+    "initializeCommand": ".devcontainer/util/run_scripts.py .devcontainer/initialize/*.yml",
+    "postCreateCommand": ".devcontainer/util/run_scripts.py .devcontainer/post_create/*.yml",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -18,7 +20,6 @@
                 "eamodio.gitlens"
             ],
             "settings": {
-                "python.defaultInterpreterPath": "/opt/rye/shims/python",
                 "autoDocstring.docstringFormat": "google-notypes",
                 "[python]": {
                     "editor.defaultFormatter": "charliermarsh.ruff",
@@ -32,21 +33,11 @@
                     "editor.defaultFormatter": "tamasfe.even-better-toml",
                     "editor.formatOnSave": true
                 },
-                "[json]": {
+                "[json][jsonc]": {
                     "editor.defaultFormatter": "vscode.json-language-features",
                     "editor.formatOnSave": true
                 },
-                "[jsonc]": {
-                    "editor.defaultFormatter": "vscode.json-language-features",
-                    "editor.formatOnSave": true
-                },
-                "files.insertFinalNewline": true,
-                "terminal.integrated.defaultProfile.linux": "zsh",
-                "terminal.integrated.profiles.linux": {
-                    "zsh": {
-                        "path": "/bin/zsh"
-                    }
-                }
+                "files.insertFinalNewline": true
             }
         }
     }

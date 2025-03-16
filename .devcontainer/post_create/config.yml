@@ -1,0 +1,7 @@
+global:
+    envs:
+
+tasks:
+    - name: install go-task
+      cmds:
+          - .devcontainer/post_create/001_install_task.sh

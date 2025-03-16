@@ -1,0 +1,18 @@
+global:
+    envs:
+        - ProjectName: myproject
+
+tasks:
+    - name: generate env file for compose.yml
+      cmds:
+          - >-
+              .devcontainer/initialize/001_generate_env.sh
+              -o docker/.env
+    - name: generate compose.yml
+      cmds:
+          - >-
+              .devcontainer/initialize/002_generate_compose.sh
+              --debug
+              -o docker/compose.devel.yml
+              docker/src/base/compose.devel.yml
+              docker/src/extend
