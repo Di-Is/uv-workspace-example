@@ -6,6 +6,7 @@ tasks:
       cmds:
           - >-
               .devcontainer/initialize/001_generate_env.sh
+              --debug
               -o docker/.env
     - name: generate compose.yml
       cmds:

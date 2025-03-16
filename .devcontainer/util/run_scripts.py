@@ -10,13 +10,14 @@
 import os
 import subprocess
 import sys
-from logging import getLogger
+from logging import INFO, basicConfig, getLogger
 from pathlib import Path
 
 import yaml
 
 TASK_KEY = "tasks"
 
+basicConfig(level=INFO, format="%(message)s")
 logger = getLogger(__name__)
 
 
@@ -89,9 +90,9 @@ def main() -> None:
     yaml_data = load_yaml_files(yaml_files)
 
     if debug_mode:
-        logger.info("--- Merged YAML ---")
+        logger.info("========== Merged YAML ==========================")
         logger.info(yaml.dump(yaml_data, default_flow_style=False))
-        logger.info("-------------------")
+        logger.info("=================================================")
 
     # `tasks` フェーズが存在しない場合はエラー
     tasks = yaml_data.get(TASK_KEY) or []

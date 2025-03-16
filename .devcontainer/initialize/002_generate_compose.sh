@@ -5,7 +5,7 @@ if ! command -v docker >/dev/null 2>&1; then
     exit 1
 fi
 
-# 使用方法の表示
+# Display usage
 usage() {
     echo "Usage: $0 -o output.yml [-d] file_or_directory1 file_or_directory2 ..."
     echo "  -o, --output   Specify the output file"
@@ -13,7 +13,7 @@ usage() {
     exit 1
 }
 
-# 引数の解析
+# Parse arguments
 OUTPUT=""
 DEBUG=false
 INPUT_PATHS=()
@@ -39,16 +39,16 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# 必須パラメータのチェック
+# Check required parameters
 if [[ -z "$OUTPUT" || ${#INPUT_PATHS[@]} -eq 0 ]]; then
     usage
 fi
 
-# ファイルとディレクトリの引数を展開して対象ファイルリストを作成
+# Expand file and directory arguments to create list of target files
 COMPOSE_FILES=()
 for path in "${INPUT_PATHS[@]}"; do
     if [[ -d "$path" ]]; then
-        # ディレクトリの場合、再帰的に .yml, .yaml を検索
+        # If directory, recursively search for .yml and .yaml files
         while IFS= read -r -d $'\0' file; do
             COMPOSE_FILES+=("$file")
         done < <(find "$path" -type f \( -iname "*.yml" -o -iname "*.yaml" \) -print0)
@@ -64,34 +64,34 @@ if [[ ${#COMPOSE_FILES[@]} -eq 0 ]]; then
     exit 1
 fi
 
-# docker compose に渡す -f オプションのリストを作成
+# Create list of -f options for docker compose
 COMPOSE_ARGS=()
 for file in "${COMPOSE_FILES[@]}"; do
     COMPOSE_ARGS+=("-f" "$file")
 done
 
-# docker compose config を実行し、結果を取得
+# Execute docker compose config and capture the result
 MERGED_COMPOSE=$(docker compose "${COMPOSE_ARGS[@]}" config --no-normalize --no-interpolate --no-path-resolution)
 
-# コマンドが成功したか確認
+# Check if the command succeeded
 if [[ $? -ne 0 ]]; then
     echo "Failed to create merged compose file."
     exit 1
 fi
 
-# デバッグモードなら、出力前に生成したcompose.ymlを表示
+# If debug mode, display the generated compose.yml before writing
 if [[ "$DEBUG" == true ]]; then
     echo "========== Merged Compose File Preview =========="
     echo "$MERGED_COMPOSE"
     echo "==============================================="
 fi
 
-# 既存のファイルがある場合の処理
+# Handling for existing output file
 if [[ -f "$OUTPUT" ]]; then
     TMP_FILE=$(mktemp)
     echo "$MERGED_COMPOSE" >"$TMP_FILE"
 
-    # 差分があるか確認
+    # Check if there are differences
     if diff -q "$TMP_FILE" "$OUTPUT" >/dev/null; then
         echo "No changes detected. Skipping write."
         rm -f "$TMP_FILE"
@@ -101,7 +101,7 @@ if [[ -f "$OUTPUT" ]]; then
         diff -u "$OUTPUT" "$TMP_FILE" | tail -n +3
         echo "-----------------------------------------------"
 
-        # 差分がある場合のみ上書き確認
+        # Prompt for overwrite confirmation only if differences exist
         read -p "Overwrite '$OUTPUT' with new changes? (y/n): " choice
         case "$choice" in
         y | Y)
@@ -121,7 +121,7 @@ if [[ -f "$OUTPUT" ]]; then
         esac
     fi
 else
-    # 直接ファイルに保存
+    # Save directly to file
     echo "$MERGED_COMPOSE" >"$OUTPUT"
 fi
 

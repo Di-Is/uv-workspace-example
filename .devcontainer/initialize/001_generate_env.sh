@@ -2,16 +2,30 @@
 set -e
 
 usage() {
-  echo "Usage: $0 -o <output_path> [-n <compose_project_name>] [-u <devel_user_id>]"
+  echo "Usage: $0 -o <output_path> [-n <compose_project_name>] [-u <devel_user_id>] [-d|--debug]"
   exit 1
 }
 
+DEBUG=0
+
+# Preprocess arguments to convert long options to short options
+TEMP=()
+for arg in "$@"; do
+  if [[ "$arg" == "--debug" ]]; then
+    TEMP+=("-d")
+  else
+    TEMP+=("$arg")
+  fi
+done
+set -- "${TEMP[@]}"
+
 # Parse options
-while getopts "o:n:u:" opt; do
+while getopts "o:n:u:d" opt; do
   case "$opt" in
     o) OUTPUT_PATH="$OPTARG" ;;
     n) ARG_PROJECT_NAME="$OPTARG" ;;
     u) ARG_DEVEL_USER_ID="$OPTARG" ;;
+    d) DEBUG=1 ;;
     *) usage ;;
   esac
 done
@@ -32,9 +46,9 @@ elif [ -n "$COMPOSE_PROJECT_NAME" ]; then
 else
   # Lowest priority: use git repository name if available
   if command -v git >/dev/null 2>&1; then
-    repo_path=$(basename -s .git $(git config --get remote.origin.url))
+    repo_path=$(git rev-parse --show-toplevel 2>/dev/null || true)
     if [ -n "$repo_path" ]; then
-      COMPOSE_PROJECT_NAME=$(basename "$repo_path")-`id -un`
+      COMPOSE_PROJECT_NAME=$(basename "$repo_path")
     else
       echo "Error: Not inside a git repository. Cannot determine COMPOSE_PROJECT_NAME."
       exit 1
@@ -65,3 +79,10 @@ DEVEL_USER_ID=$DEVEL_USER_ID
 EOF
 
 echo ".env file has been generated at $OUTPUT_PATH."
+
+# If debug mode is enabled, output the contents of the .env file
+if [ "$DEBUG" -eq 1 ]; then
+  echo "========== Generated .env file =================="
+  cat "$OUTPUT_PATH"
+  echo "================================================="
+fi
